@@ -1,0 +1,120 @@
+version: '3.8'
+
+services:
+  # Topic creation
+  create-topics:
+    build: .
+    command: create-topics
+    networks:
+      - icu-network
+
+  # Producers
+  producer-vitals:
+    build: .
+    command: producer-vitals
+    depends_on:
+      - create-topics
+
+    networks:
+      - icu-network
+
+  producer-hms:
+    build: .
+    command: producer-hms
+    depends_on:
+      - create-topics
+
+    networks:
+      - icu-network
+
+  producer-lab:
+    build: .
+    command: producer-lab
+    depends_on:
+      - create-topics
+
+    networks:
+      - icu-network
+
+  producer-pharmacy:
+    build: .
+    command: producer-pharmacy
+    depends_on:
+      - create-topics
+
+    networks:
+      - icu-network
+
+  producer-emergency:
+    build: .
+    command: producer-emergency
+    depends_on:
+      - create-topics
+
+    networks:
+      - icu-network
+
+  # Consumers
+  consumer-vitals:
+    build: .
+    command: consumer-vitals
+    depends_on:
+      - producer-vitals
+
+    networks:
+      - icu-network
+
+  consumer-hms:
+    build: .
+    command: consumer-hms
+    depends_on:
+      - producer-hms
+
+    networks:
+      - icu-network
+
+  consumer-lab:
+    build: .
+    command: consumer-lab
+    depends_on:
+      - producer-lab
+
+    networks:
+      - icu-network
+
+  consumer-pharmacy:
+    build: .
+    command: consumer-pharmacy
+    depends_on:
+      - producer-pharmacy
+
+    networks:
+      - icu-network
+
+  consumer-emergency:
+    build: .
+    command: consumer-emergency
+    depends_on:
+      - producer-emergency
+
+    networks:
+      - icu-network
+
+  consumer-alerts:
+    build: .
+    command: consumer-alerts
+    depends_on:
+      - producer-vitals
+      - producer-hms
+      - producer-lab
+      - producer-pharmacy
+      - producer-emergency
+
+    networks:
+      - icu-network
+
+
+
+networks:
+  icu-network:
+    external: true  

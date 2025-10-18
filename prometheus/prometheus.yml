@@ -1,0 +1,56 @@
+global:
+  scrape_interval: 15s
+
+scrape_configs:
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  - job_name: 'kafka'
+    static_configs:
+      - targets: ['kafka:9092']
+
+  - job_name: 'producer-vitals'
+    static_configs:
+      - targets: ['producer-vitals:8081']
+    scrape_interval: 5s
+  - job_name: 'producer-emergency'
+    static_configs:
+      - targets: ['producer-emergency:8081']
+    scrape_interval: 5s
+  - job_name: 'producer-hms'
+    static_configs:
+      - targets: ['producer-hms:8081']
+    scrape_interval: 5s
+  - job_name: 'producer-lab'
+    static_configs:
+      - targets: ['producer-lab:8081']
+    scrape_interval: 5s
+  - job_name: 'producer-pharmacy'
+    static_configs:
+      - targets: ['producer-pharmacy:8081']
+    scrape_interval: 5s
+  - job_name: 'consumer-vitals'
+    static_configs:
+      - targets: ['consumer-vitals:8081']
+    scrape_interval: 5s
+  - job_name: 'consumer-emergency'
+    static_configs:
+      - targets: ['consumer-emergency:8081']
+    scrape_interval: 5s
+  - job_name: 'consumer-hms'
+    static_configs:
+      - targets: ['consumer-hms:8081']
+    scrape_interval: 5s
+  - job_name: 'consumer-lab'
+    static_configs:
+      - targets: ['consumer-lab:8081']
+    scrape_interval: 5s
+  - job_name: 'consumer-pharmacy'
+    static_configs:
+      - targets: ['consumer-pharmacy:8081']
+    scrape_interval: 5s
+  - job_name: 'consumer-alerts'
+    static_configs:
+      - targets: ['consumer-alerts:8081']
+    scrape_interval: 5s

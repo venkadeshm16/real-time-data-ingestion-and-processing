@@ -1,0 +1,75 @@
+{
+  "dashboard": {
+    "id": null,
+    "title": "ICU Data Streaming Dashboard",
+    "tags": ["icu", "kafka", "alerts"],
+    "timezone": "browser",
+    "panels": [
+      {
+        "id": 1,
+        "title": "Messages Sent by Topic",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "sum by (topic) (kafka_messages_sent_total)",
+            "legendFormat": "{{topic}}"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0}
+      },
+      {
+        "id": 2,
+        "title": "Messages Consumed by Topic",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "sum by (topic) (kafka_messages_consumed_total)",
+            "legendFormat": "{{topic}}"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0}
+      },
+      {
+        "id": 3,
+        "title": "Critical Alerts Generated",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "sum by (data_type) (icu_alerts_generated_total)",
+            "legendFormat": "{{data_type}}"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 24, "x": 0, "y": 8}
+      },
+      {
+        "id": 4,
+        "title": "Active Producers",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "sum(kafka_active_producers)",
+            "legendFormat": "Active Producers"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 16}
+      },
+      {
+        "id": 5,
+        "title": "Active Consumers",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "sum(kafka_active_consumers)",
+            "legendFormat": "Active Consumers"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 16}
+      }
+    ],
+    "time": {
+      "from": "now-1h",
+      "to": "now"
+    },
+    "refresh": "5s"
+  }
+}
