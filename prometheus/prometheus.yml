@@ -8,8 +8,10 @@ scrape_configs:
 
   - job_name: 'kafka'
     static_configs:
-      - targets: ['kafka:9092']
-
+      - targets: ['kafka-jmx-exporter:8080']
+  - job_name: 'zookeeper'
+    static_configs:
+      - targets: ['zookeeper-jmx-exporter:8081']
   - job_name: 'producer-vitals'
     static_configs:
       - targets: ['producer-vitals:8081']
