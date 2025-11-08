@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   minio:
-    image: quay.io/minio/minio:RELEASE.2024-01-16T16-07-38Z
+    image: quay.io/minio/minio:latest
     container_name: minio
     ports:
       - "9000:9000"    # S3 API
@@ -14,8 +14,8 @@ services:
       MINIO_SERVER_URL: http://localhost:9000
     command: server /data --console-address ":9001"
     volumes:
-      - minio-data:/workspace/oct/project/minio-server/data
-      - minio-config://workspace/oct/project/minio-server/.minio
+      - minio-data:/data
+      - minio-config:/.minio
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]

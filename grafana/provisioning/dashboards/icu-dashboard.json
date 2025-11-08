@@ -1,75 +1,179 @@
 {
   "dashboard": {
     "id": null,
-    "title": "ICU Data Streaming Dashboard",
-    "tags": ["icu", "kafka", "alerts"],
+    "title": "ICU Real-Time Data Pipeline Dashboard",
+    "tags": ["icu", "kafka", "alerts", "performance"],
     "timezone": "browser",
     "panels": [
       {
         "id": 1,
-        "title": "Messages Sent by Topic",
-        "type": "stat",
+        "title": "Message Throughput (msg/sec)",
+        "type": "graph",
         "targets": [
           {
-            "expr": "sum by (topic) (kafka_messages_sent_total)",
-            "legendFormat": "{{topic}}"
+            "expr": "rate(kafka_messages_sent_total[1m])",
+            "legendFormat": "Sent - {{topic}}"
+          },
+          {
+            "expr": "rate(kafka_messages_consumed_total[1m])",
+            "legendFormat": "Consumed - {{topic}}"
           }
         ],
         "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0}
       },
       {
         "id": 2,
-        "title": "Messages Consumed by Topic",
+        "title": "Error Rate (%)",
         "type": "stat",
         "targets": [
           {
-            "expr": "sum by (topic) (kafka_messages_consumed_total)",
-            "legendFormat": "{{topic}}"
+            "expr": "rate(kafka_producer_errors_total[5m]) * 100",
+            "legendFormat": "Producer Errors"
+          },
+          {
+            "expr": "rate(kafka_consumer_errors_total[5m]) * 100",
+            "legendFormat": "Consumer Errors"
           }
         ],
-        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0}
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0},
+        "thresholds": [{"color": "red", "value": 1}]
       },
       {
         "id": 3,
-        "title": "Critical Alerts Generated",
+        "title": "Processing Latency (95th percentile)",
         "type": "graph",
         "targets": [
           {
-            "expr": "sum by (data_type) (icu_alerts_generated_total)",
-            "legendFormat": "{{data_type}}"
+            "expr": "histogram_quantile(0.95, kafka_message_process_duration_bucket)",
+            "legendFormat": "{{topic}} - {{consumer}}"
           }
         ],
-        "gridPos": {"h": 8, "w": 24, "x": 0, "y": 8}
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 8}
       },
       {
         "id": 4,
-        "title": "Active Producers",
+        "title": "Critical Alerts by Type",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "rate(icu_alerts_generated_total[1m])",
+            "legendFormat": "{{data_type}}"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 8}
+      },
+      {
+        "id": 5,
+        "title": "Active Services",
         "type": "stat",
         "targets": [
           {
             "expr": "sum(kafka_active_producers)",
-            "legendFormat": "Active Producers"
+            "legendFormat": "Producers"
+          },
+          {
+            "expr": "sum(kafka_active_consumers)",
+            "legendFormat": "Consumers"
           }
         ],
-        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 16}
+        "gridPos": {"h": 6, "w": 8, "x": 0, "y": 16}
       },
       {
-        "id": 5,
-        "title": "Active Consumers",
+        "id": 6,
+        "title": "Patient Coverage",
         "type": "stat",
         "targets": [
           {
-            "expr": "sum(kafka_active_consumers)",
-            "legendFormat": "Active Consumers"
+            "expr": "count(count by (patient_id) (kafka_messages_sent_total))",
+            "legendFormat": "Unique Patients"
           }
         ],
-        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 16}
+        "gridPos": {"h": 6, "w": 8, "x": 8, "y": 16}
+      },
+      {
+        "id": 7,
+        "title": "Alert Response Time (ms)",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "avg(kafka_alert_response_time_ms)",
+            "legendFormat": "Avg Response Time"
+          }
+        ],
+        "gridPos": {"h": 6, "w": 8, "x": 16, "y": 16}
+      },
+      {
+        "id": 8,
+        "title": "Resource Utilization",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "rate(process_cpu_seconds_total[1m]) * 100",
+            "legendFormat": "CPU % - {{job}}"
+          },
+          {
+            "expr": "process_resident_memory_bytes / 1024 / 1024",
+            "legendFormat": "Memory MB - {{job}}"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 22}
+      },
+      {
+        "id": 9,
+        "title": "MinIO Storage Rate",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "rate(minio_alerts_stored_total[1m])",
+            "legendFormat": "Alerts Stored/sec"
+          },
+          {
+            "expr": "minio_storage_size_bytes / 1024 / 1024",
+            "legendFormat": "Storage Size MB"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 22}
+      },
+      {
+        "id": 10,
+        "title": "Critical vs Normal Alerts Ratio",
+        "type": "piechart",
+        "targets": [
+          {
+            "expr": "sum by (priority) (icu_alerts_generated_total)",
+            "legendFormat": "{{priority}}"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 30}
+      },
+      {
+        "id": 11,
+        "title": "Top Critical Conditions",
+        "type": "table",
+        "targets": [
+          {
+            "expr": "topk(10, sum by (condition) (icu_emergency_conditions_total))",
+            "legendFormat": "{{condition}}"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 30}
       }
     ],
     "time": {
       "from": "now-1h",
       "to": "now"
     },
-    "refresh": "5s"
+    "refresh": "5s",
+    "templating": {
+      "list": [
+        {
+          "name": "topic",
+          "type": "query",
+          "query": "label_values(kafka_messages_sent_total, topic)",
+          "multi": true,
+          "includeAll": true
+        }
+      ]
+    }
   }
 }
