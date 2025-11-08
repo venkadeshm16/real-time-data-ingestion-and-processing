@@ -1,0 +1,3 @@
+hostPort: kafka:9998
+rules:
+- pattern: ".*"

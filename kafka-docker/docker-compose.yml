@@ -76,34 +76,32 @@ services:
       - icu-network
 
   kafka-jmx-exporter:
-    image: sscaling/jmx-prometheus-exporter:0.20.0
+    image: prom/jmx-exporter:0.20.0
     container_name: kafka-jmx-exporter
     restart: unless-stopped
     ports:
       - "8080:8080"
-    environment:
-      CONFIG_YML: |
-        startDelaySeconds: 0
-        hostPort: kafka:9998
-        rules:
-        - pattern: ".*"
+    command:
+      - "8080"
+      - "/etc/jmx_exporter/kafka.yml"
+    volumes:
+      - ./jmx-config/kafka.yml:/etc/jmx_exporter/kafka.yml
     depends_on:
       - kafka
     networks:
       - icu-network
 
   zookeeper-jmx-exporter:
-    image: sscaling/jmx-prometheus-exporter:0.20.0
+    image: prom/jmx-exporter:0.20.0
     container_name: zookeeper-jmx-exporter
     restart: unless-stopped
     ports:
       - "8081:8080"
-    environment:
-      CONFIG_YML: |
-        startDelaySeconds: 0
-        hostPort: zookeeper:9999
-        rules:
-        - pattern: ".*"
+    command:
+      - "8080"
+      - "/etc/jmx_exporter/zookeeper.yml"
+    volumes:
+      - ./jmx-config/zookeeper.yml:/etc/jmx_exporter/zookeeper.yml
     depends_on:
       - zookeeper
     networks:
