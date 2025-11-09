@@ -76,7 +76,7 @@ services:
       - icu-network
 
   kafka-jmx-exporter:
-    image: prom/jmx-exporter:0.20.0
+    image: bitnami/jmx-exporter:latest
     container_name: kafka-jmx-exporter
     restart: unless-stopped
     ports:
@@ -92,7 +92,7 @@ services:
       - icu-network
 
   zookeeper-jmx-exporter:
-    image: prom/jmx-exporter:0.20.0
+    image: bitnami/jmx-exporter:latest
     container_name: zookeeper-jmx-exporter
     restart: unless-stopped
     ports:
