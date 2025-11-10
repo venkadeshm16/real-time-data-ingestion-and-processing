@@ -7,15 +7,17 @@ import os
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-# Import with mocking at the Minio level
-with patch('minio.Minio'):
-    from commonfunction.minio_storage import MinIOStorage
-
+@patch('minio.Minio')
+@patch('multiprocessing.Process')
 class TestMinIOStorage:
-    
-    @patch('commonfunction.minio_storage.Minio')
-    @patch('commonfunction.minio_storage.Process')
+    def setup_method(self):
+        # Clear any existing module cache
+        if 'commonfunction.minio_storage' in sys.modules:
+            del sys.modules['commonfunction.minio_storage']
+
     def test_init(self, mock_process, mock_minio):
+        from commonfunction.minio_storage import MinIOStorage
+        
         mock_client = Mock()
         mock_minio.return_value = mock_client
         mock_client.bucket_exists.return_value = False
@@ -26,9 +28,9 @@ class TestMinIOStorage:
         assert storage.batch_interval == 30
         mock_client.make_bucket.assert_called_once_with('icu-critical-alerts')
     
-    @patch('commonfunction.minio_storage.Minio')
-    @patch('commonfunction.minio_storage.Process')
     def test_add_alert_to_batch(self, mock_process, mock_minio):
+        from commonfunction.minio_storage import MinIOStorage
+        
         mock_client = Mock()
         mock_minio.return_value = mock_client
         mock_client.bucket_exists.return_value = True
@@ -41,9 +43,9 @@ class TestMinIOStorage:
         assert len(storage.alert_batch) == 1
         assert storage.alert_batch[0] == alert_data
     
-    @patch('commonfunction.minio_storage.Minio')
-    @patch('commonfunction.minio_storage.Process')
     def test_batch_size_trigger(self, mock_process, mock_minio):
+        from commonfunction.minio_storage import MinIOStorage
+        
         mock_client = Mock()
         mock_minio.return_value = mock_client
         mock_client.bucket_exists.return_value = True
@@ -56,9 +58,9 @@ class TestMinIOStorage:
             
             mock_queue.assert_called_once()
     
-    @patch('commonfunction.minio_storage.Minio')
-    @patch('commonfunction.minio_storage.Process')
     def test_flush_batch(self, mock_process, mock_minio):
+        from commonfunction.minio_storage import MinIOStorage
+        
         mock_client = Mock()
         mock_minio.return_value = mock_client
         mock_client.bucket_exists.return_value = True
