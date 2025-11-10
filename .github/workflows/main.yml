@@ -32,7 +32,12 @@ jobs:
           export KAFKA_BOOTSTRAP_SERVERS="localhost:9092"
           export MINIO_ENDPOINT="localhost:9000"
           mkdir -p reports
-          pytest data-consumer/tests/ data-producer/tests/ --html=reports/report.html --self-contained-html
+          # Run data-consumer tests
+          cd data-consumer && pytest tests/ --html=../reports/consumer-report.html --self-contained-html
+          # Run data-producer tests  
+          cd ../data-producer && pytest tests/ --html=../reports/producer-report.html --self-contained-html
+          # Combine reports
+          cd .. && pytest data-consumer/tests/ data-producer/tests/ --html=reports/report.html --self-contained-html || true
 
       - name: Upload report as artifact
         uses: actions/upload-artifact@v4
