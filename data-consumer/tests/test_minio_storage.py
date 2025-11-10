@@ -7,7 +7,9 @@ import os
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from commonfunction.minio_storage import MinIOStorage
+# Import with mocking at the Minio level
+with patch('minio.Minio'):
+    from commonfunction.minio_storage import MinIOStorage
 
 class TestMinIOStorage:
     
