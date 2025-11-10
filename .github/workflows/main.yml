@@ -40,10 +40,12 @@ jobs:
           name: pytest-html-report
           path: reports/report.html
 
-      - name: Deploy HTML report to GitHub Pages
+      - name: Deploy HTML report to master branch
+        if: github.ref == 'refs/heads/master'
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./reports
+          publish_branch: master
           destination_dir: latest-report
           keep_files: true
