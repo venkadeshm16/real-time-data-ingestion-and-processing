@@ -323,6 +323,65 @@
             .alert-item { padding: 20px 15px; }
             .btn { padding: 10px 16px; font-size: 0.8rem; }
         }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            backdrop-filter: blur(5px);
+        }
+        .modal-content {
+            background: white;
+            margin: 5% auto;
+            padding: 30px;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1e293b;
+        }
+        .close {
+            font-size: 2rem;
+            font-weight: bold;
+            cursor: pointer;
+            color: #64748b;
+            transition: color 0.3s;
+        }
+        .close:hover { color: #dc2626; }
+        .detail-section {
+            margin: 20px 0;
+            padding: 20px;
+            background: #f8fafc;
+            border-radius: 12px;
+            border-left: 4px solid #3b82f6;
+        }
+        .detail-label {
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 5px;
+        }
+        .detail-value {
+            color: #1f2937;
+            font-size: 1.1rem;
+        }
     </style>
 </head>
 <body>
@@ -362,6 +421,16 @@
                 <h3>System Monitoring Active</h3>
                 <p>Waiting for ICU alerts...</p>
             </div>
+        </div>
+    </div>
+
+    <div id="detailsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Alert Details</h2>
+                <span class="close">&times;</span>
+            </div>
+            <div id="modal-body"></div>
         </div>
     </div>
 
@@ -509,11 +578,85 @@
         }
         
         function showDetails(alertId) {
-            const alertElement = document.querySelector(`[data-alert-id="${alertId}"]`);
-            if (alertElement) {
-                alert(`Alert Details for: ${alertId}\n\nThis would typically open a detailed view or modal with complete alert information, patient history, and recommended actions.`);
+            const alerts = alertsContainer.querySelectorAll('.alert-item');
+            let alertData = null;
+            
+            // Find the alert data (this would normally come from a data store)
+            alerts.forEach(alert => {
+                if (alert.dataset.alertId === alertId) {
+                    alertData = {
+                        alert_id: alertId,
+                        patient_id: alert.dataset.patientId,
+                        priority: alert.dataset.priority,
+                        timestamp: alert.querySelector('.alert-time').textContent.replace('🕐', '').trim(),
+                        data_type: alert.querySelector('.info-item:nth-child(2)').textContent.replace('Type:', '').trim(),
+                        status: alert.querySelector('.info-item:nth-child(4)') ? 
+                               alert.querySelector('.info-item:nth-child(4)').textContent.replace('Status:', '').trim() : 'Active'
+                    };
+                }
+            });
+            
+            if (alertData) {
+                const modal = document.getElementById('detailsModal');
+                const modalBody = document.getElementById('modal-body');
+                
+                modalBody.innerHTML = `
+                    <div class="detail-section">
+                        <div class="detail-label">Alert ID</div>
+                        <div class="detail-value">${alertData.alert_id}</div>
+                    </div>
+                    <div class="detail-section">
+                        <div class="detail-label">Patient ID</div>
+                        <div class="detail-value">${alertData.patient_id}</div>
+                    </div>
+                    <div class="detail-section">
+                        <div class="detail-label">Priority Level</div>
+                        <div class="detail-value priority-badge priority-${alertData.priority.toLowerCase()}">
+                            ${alertData.priority}
+                        </div>
+                    </div>
+                    <div class="detail-section">
+                        <div class="detail-label">Alert Type</div>
+                        <div class="detail-value">${alertData.data_type}</div>
+                    </div>
+                    <div class="detail-section">
+                        <div class="detail-label">Timestamp</div>
+                        <div class="detail-value">${alertData.timestamp}</div>
+                    </div>
+                    <div class="detail-section">
+                        <div class="detail-label">Status</div>
+                        <div class="detail-value">${alertData.status}</div>
+                    </div>
+                    <div class="detail-section">
+                        <div class="detail-label">Recommended Actions</div>
+                        <div class="detail-value">
+                            • Immediate medical attention required<br>
+                            • Check patient vitals<br>
+                            • Notify attending physician<br>
+                            • Document response in patient record
+                        </div>
+                    </div>
+                `;
+                
+                modal.style.display = 'block';
             }
         }
+        
+        // Modal close functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const modal = document.getElementById('detailsModal');
+            const closeBtn = modal.querySelector('.close');
+            
+            closeBtn.onclick = function() {
+                modal.style.display = 'none';
+            }
+            
+            window.onclick = function(event) {
+                if (event.target === modal) {
+                    modal.style.display = 'none';
+                }
+            }
+        });
         
         function updateStats() {
             const alerts = alertsContainer.querySelectorAll('.alert-item');
