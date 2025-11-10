@@ -36,8 +36,8 @@ jobs:
           cd data-consumer && pytest tests/ --html=../reports/consumer-report.html --self-contained-html
           # Run data-producer tests  
           cd ../data-producer && pytest tests/ --html=../reports/producer-report.html --self-contained-html
-          # Combine reports
-          cd .. && pytest data-consumer/tests/ data-producer/tests/ --html=reports/report.html --self-contained-html || true
+          # Use consumer report as main report
+          cd .. && cp reports/consumer-report.html reports/report.html
 
       - name: Upload report as artifact
         uses: actions/upload-artifact@v4
