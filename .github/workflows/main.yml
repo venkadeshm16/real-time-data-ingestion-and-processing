@@ -45,6 +45,6 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./reports
-          publish_branch: master
+          publish_branch: main
           destination_dir: latest-report
           keep_files: true
