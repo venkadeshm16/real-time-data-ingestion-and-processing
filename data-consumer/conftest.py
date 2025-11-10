@@ -8,10 +8,10 @@ from unittest.mock import patch, Mock
 def pytest_configure(config):
     """Configure pytest with mocks before any test collection"""
     # Mock MinIOStorage before any imports
-    mock_minio = Mock()
-    mock_minio.return_value = Mock()
-    sys.modules['commonfunction.minio_storage'] = Mock()
-    sys.modules['commonfunction.minio_storage'].MinIOStorage = mock_minio
+    mock_module = Mock()
+    mock_minio_class = Mock()
+    mock_module.MinIOStorage = mock_minio_class
+    sys.modules['commonfunction.minio_storage'] = mock_module
 
 @pytest.fixture(autouse=True)
 def mock_kafka_connections():
