@@ -33,11 +33,9 @@ jobs:
           export MINIO_ENDPOINT="localhost:9000"
           mkdir -p reports
           # Run data-consumer tests
-          cd data-consumer && pytest tests/ --html=../reports/consumer-report.html --self-contained-html
+          cd data-consumer && pytest tests/ --html=../reports/report.html --self-contained-html
           # Run data-producer tests  
           cd ../data-producer && pytest tests/ --html=../reports/producer-report.html --self-contained-html
-          # Use consumer report as main report
-          cd .. && cp reports/consumer-report.html reports/report.html
 
       - name: Upload report as artifact
         uses: actions/upload-artifact@v4
