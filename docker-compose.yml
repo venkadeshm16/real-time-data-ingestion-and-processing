@@ -113,7 +113,15 @@ services:
     networks:
       - icu-network
 
-
+  # ICU Alert UI
+  icu-alert-ui:
+    build: ./icu-alert-ui
+    ports:
+      - "5000:5000"
+    depends_on:
+      - consumer-alerts
+    networks:
+      - icu-network
 
 networks:
   icu-network:
